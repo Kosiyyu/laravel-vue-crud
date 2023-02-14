@@ -24,7 +24,7 @@ Route::get('/clients', [ClientController::class, 'getAll']);
 
 //crud methods
 Route::prefix('/client')->group(function () {
-    Route::post('/', [ClientController::class, 'create']);
+    Route::post('', [ClientController::class, 'create']);
     Route::get('/{id}', [ClientController::class, 'get']);
     Route::patch('/{id}', [ClientController::class, 'update']);
     Route::delete('/{id}', [ClientController::class, 'delete']);

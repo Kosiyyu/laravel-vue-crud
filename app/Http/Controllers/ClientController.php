@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Client;
+use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
@@ -18,9 +19,25 @@ class ClientController extends Controller
     //create
     public function create(Request $request)
     {
-        //validation todo
+        $validatedData = Validator::make($request->all(), [
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email|unique:clients',
+            'telephone_number' => 'required|unique:clients',
+        ]);
+        if ($validatedData->fails())
+        {
+            return response()->json($validatedData->errors(), 400);
+        }
 
-        $client = Client::create($request->all());
+        $client = new Client;
+        $client->firstname = $request->input('firstname');
+        $client->lastname = $request->input('lastname');
+        $client->email = $request->input('email');
+        $client->telephone_number = $request->input('telephone_number');
+
+        $client->save();
+
         return response()->json($client, 201);
     }
 
@@ -29,7 +46,7 @@ class ClientController extends Controller
     {
         $client = Client::find($id);
         if($client === null){
-            return response()->json(404);
+            return response()->json(null, 404);
         }
 
         return response()->json($client, 200);
@@ -44,7 +61,16 @@ class ClientController extends Controller
             return response()->json(null, 404);
         }
 
-        //validation todo
+        $validatedData = Validator::make($request->all(), [
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email|unique:clients,email,'.$id,
+            'telephone_number' => 'required|unique:clients,telephone_number,'.$id,
+        ]);
+        if ($validatedData->fails())
+        {
+            return response()->json($validatedData->errors(), 400);
+        }
 
         $client->firstname = $request->input('firstname');
         $client->lastname = $request->input('lastname');
